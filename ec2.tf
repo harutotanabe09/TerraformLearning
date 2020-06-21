@@ -6,9 +6,20 @@ data aws_ssm_parameter amzn2_ami {
 resource "aws_instance" "web" {
   ami           = (data.aws_ssm_parameter.amzn2_ami.value)
   instance_type = "t2.micro"
-
   tags = {
-    Name     = "HelloWorld",
-    overtime = "None",
+    Name          = "HelloWorld",
+    overtime      = "None",
+    AutoStartStop = "TRUE",
+    env           = "test",
+  }
+}
+
+resource "aws_instance" "web2" {
+  ami           = (data.aws_ssm_parameter.amzn2_ami.value)
+  instance_type = "t2.micro"
+  tags = {
+    Name          = "HelloWorld2",
+    overtime      = "None",
+    AutoStartStop = "TRUE",
   }
 }
