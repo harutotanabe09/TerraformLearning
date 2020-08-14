@@ -30,3 +30,6 @@ $ terraform plan -var-file="secret.tfvars"
 $ terraform apply -var-file="secret.tfvars"
 ```
 
+### Reference
+
+https://dev.classmethod.jp/articles/terraform-v0-6-15-supports-cloudfront/
