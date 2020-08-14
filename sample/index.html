@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <form id="form_1" method="post" accept-charset="utf-8" return false>
+        <p>名前 <input type="text" name = "userid" id ="userid"> </p>
+        <p>パスワード <input type="text" name = "passward" id="passward"> </p>
+    </form>
+    <button id="ajax">ajax</button>
+    <div class="result"></div>
+    <script type="text/javascript">
+        $(function(){
+            var response = $.ajax({ type: "GET",   
+                        url: "http://dhllhhfc6fwhk.cloudfront.net/test.json",   
+                        async: false
+                      }).responseText;
+            console.log(response);
+        });
+    </script>
+</body>
+</html>

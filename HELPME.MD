@@ -1,6 +1,6 @@
 # :tickets: Terraform AWS Create Service
 
-AWS Service Create
+AWS Service Create By Terraform
 
 ## Getting Started
 
@@ -29,6 +29,10 @@ $ terraform init
 $ terraform plan -var-file="secret.tfvars"
 $ terraform apply -var-file="secret.tfvars"
 ```
+
+### Module
+
+- Terraform
 
 ### Reference
 

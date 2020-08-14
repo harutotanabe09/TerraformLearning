@@ -1,20 +1,32 @@
 # Variable list
-variable "name" { default = "enjapan-service-storage-develop-20100010"}
-variable "acl" { default = "public-read" }
+variable "name" { default = "enjapan-service-storage-develop-20100010" }
+variable "region" { default = "ap-northeast-1" }
+variable "acl" { default = "private" }
 variable "index" { default = "index.html" }
+
+# Cloudfront Identity
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
   comment = var.name
 }
+
 # S3 Bucket
 resource "aws_s3_bucket" "s3" {
-  bucket        = var.name
+  bucket = var.name
+  # 外部公開の設定OFF
   acl           = var.acl
   force_destroy = true
-  policy = templatefile("policy.json.tmpl", { origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id , bucket_name = var.name })
-  website {
-    index_document = var.index
+  policy        = templatefile("policy.json.tmpl", { origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id, bucket_name = var.name })
+  # JSから呼ぶためCORS設定
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET"]
+    # TODO:ドメイン指定
+    allowed_origins = ["*"]
+    expose_headers  = ["HEAD"]
+    max_age_seconds = 3000
   }
 }
+
 # Cloudfront
 resource "aws_cloudfront_distribution" "cf" {
   enabled             = true
@@ -23,7 +35,8 @@ resource "aws_cloudfront_distribution" "cf" {
   price_class         = "PriceClass_200"
   retain_on_delete    = true
   origin {
-    domain_name = format("%s.s3.amazonaws.com", aws_s3_bucket.s3.id)
+    # S3のドメイン設定 : リージョン指定しないとCloudFrontへリダイレクトする場合あり
+    domain_name = format("%s.s3-%s.amazonaws.com", aws_s3_bucket.s3.id, var.region)
     origin_id   = var.name
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
@@ -34,7 +47,9 @@ resource "aws_cloudfront_distribution" "cf" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = aws_s3_bucket.s3.id
     forwarded_values {
+      #クエリ文字列を転送
       query_string = false
+      #クッキーの転送
       cookies {
         forward = "none"
       }
@@ -45,9 +60,9 @@ resource "aws_cloudfront_distribution" "cf" {
     max_ttl                = 86400
   }
   restrictions {
+    #アクセスを制限したい地域の設定
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA", "GB", "DE", "JP"]
+      restriction_type = "none"
     }
   }
   viewer_certificate {
