@@ -1,9 +1,3 @@
-# Variable list
-variable "name" { default = "enjapan-service-storage-develop-20100010" }
-variable "region" { default = "ap-northeast-1" }
-variable "acl" { default = "private" }
-variable "index" { default = "index.html" }
-
 # Cloudfront Identity
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
   comment = var.name
@@ -12,11 +6,13 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 # S3 Bucket
 resource "aws_s3_bucket" "s3" {
   bucket = var.name
-  # 外部公開の設定OFF
+  # ACL:外部公開の設定OFF
   acl           = var.acl
+  # 空でないバケットの削除を許可
   force_destroy = true
+  # バケットポリシー：CloudFrontを設定
   policy        = templatefile("policy.json.tmpl", { origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id, bucket_name = var.name })
-  # JSから呼ぶためCORS設定
+  # CORS：JSから呼ぶため設定
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET"]
@@ -34,6 +30,7 @@ resource "aws_cloudfront_distribution" "cf" {
   default_root_object = var.index
   price_class         = "PriceClass_200"
   retain_on_delete    = true
+  # キャッシュ元の設定
   origin {
     # S3のドメイン設定 : リージョン指定しないとCloudFrontへリダイレクトする場合あり
     domain_name = format("%s.s3-%s.amazonaws.com", aws_s3_bucket.s3.id, var.region)
@@ -64,6 +61,10 @@ resource "aws_cloudfront_distribution" "cf" {
     geo_restriction {
       restriction_type = "none"
     }
+  }
+  tags = {
+    Environment = "development",
+    AppName = "20100010"
   }
   viewer_certificate {
     cloudfront_default_certificate = true
