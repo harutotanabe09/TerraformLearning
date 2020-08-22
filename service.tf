@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "s3" {
   force_destroy = true
   # バケットポリシー：CloudFrontを設定
   policy        = templatefile("policy.json.tmpl", { origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id, bucket_name = var.name })
-  # CORS：JSから呼ぶため設定
+  # CORS設定:JS対応
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET"]

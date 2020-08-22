@@ -1,6 +1,5 @@
 ### Terraformとは？
 
-
 インフラをコード定義するためのツール
 
 定義したファイルをクラウド（AWS,GCP）といったサービスに対して、ソースコードで定義して実行できる
@@ -27,8 +26,6 @@ AWSだけではなく、GCPやAzureも使える
 ### 特徴4：公式ドキュメント読みやすい
 
 https://www.terraform.io/docs/providers/aws/index.html
-
-
 
 ### Terraformのインストール手順
 

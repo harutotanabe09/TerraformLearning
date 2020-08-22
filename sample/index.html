@@ -6,19 +6,18 @@
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <form id="form_1" method="post" accept-charset="utf-8" return false>
-        <p>名前 <input type="text" name = "userid" id ="userid"> </p>
-        <p>パスワード <input type="text" name = "passward" id="passward"> </p>
-    </form>
-    <button id="ajax">ajax</button>
-    <div class="result"></div>
+    <div id="foo"></div>
     <script type="text/javascript">
         $(function(){
             var response = $.ajax({ type: "GET",   
-                        url: "http://dhllhhfc6fwhk.cloudfront.net/test.json",   
+                        url: "https://d2i4w6535gm5jn.cloudfront.net/service.json",   
                         async: false
                       }).responseText;
-            console.log(response);
+            var seriveList = JSON.parse(response);
+            for (var i = 0; i<seriveList.length; i++) {
+                var div = $('<div class="site">' + seriveList[i]["site"] +  '-' + seriveList[i]["site_url"] + '</div>');
+                div.insertAfter("#foo");
+            }
         });
     </script>
 </body>
