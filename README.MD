@@ -73,5 +73,11 @@ terraform plan -destroy
 terraform destroy  -var-file="secret.tfvars"
 ```
 
+### 環境ごと設定
+```sh
+terraform workspace new develop
+terraform workspace list
+```
+
 ### ドキュメント
 https://qiita.com/minamijoyo/items/1f57c62bed781ab8f4d7

@@ -1,3 +1,8 @@
+# Local Variable
+locals {
+  name = format("%s-%s", var.name, terraform.workspace)
+}
+
 # Cloudfront Identity
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
   comment = var.name
@@ -5,13 +10,13 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 
 # S3 Bucket
 resource "aws_s3_bucket" "s3" {
-  bucket = var.name
+  bucket = local.name
   # ACL:外部公開の設定OFF
-  acl           = var.acl
+  acl = var.acl
   # 空でないバケットの削除を許可
   force_destroy = true
   # バケットポリシー：CloudFrontを設定
-  policy        = templatefile("policy.json.tmpl", { origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id, bucket_name = var.name })
+  policy = templatefile("policy.json.tmpl", { origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id, bucket_name = format("%s-%s", var.name, terraform.workspace) })
   # CORS設定:JS対応
   cors_rule {
     allowed_headers = ["*"]
@@ -26,7 +31,7 @@ resource "aws_s3_bucket" "s3" {
 # Cloudfront
 resource "aws_cloudfront_distribution" "cf" {
   enabled             = true
-  comment             = var.name
+  comment             = local.name
   default_root_object = var.index
   price_class         = "PriceClass_200"
   retain_on_delete    = true
@@ -34,7 +39,7 @@ resource "aws_cloudfront_distribution" "cf" {
   origin {
     # S3のドメイン設定 : リージョン指定しないとCloudFrontへリダイレクトする場合あり
     domain_name = format("%s.s3-%s.amazonaws.com", aws_s3_bucket.s3.id, var.region)
-    origin_id   = var.name
+    origin_id   = local.name
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
     }
@@ -63,8 +68,8 @@ resource "aws_cloudfront_distribution" "cf" {
     }
   }
   tags = {
-    Environment = "development",
-    AppName = "20100010"
+    Environment = terraform.workspace,
+    AppName     = local.name
   }
   viewer_certificate {
     cloudfront_default_certificate = true
