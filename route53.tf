@@ -1,13 +1,5 @@
 resource "aws_route53_zone" "site_zone" {
-  name = "example2222.com"
-}
-
-resource "aws_route53_zone" "saws_route53_zonete_zone" {
   name = var.root_domain
-  tags = {
-    Environment = terraform.workspace,
-    AppName     = local.name
-  }
 }
 
 resource "aws_route53_record" "site" {
