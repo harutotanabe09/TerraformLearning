@@ -7,3 +7,8 @@ provider "aws" {
   secret_key = (var.aws_secret_key)
   region     = "ap-northeast-1"
 }
+
+# Local Variable
+locals {
+  name = format("%s-%s", var.name, terraform.workspace)
+}

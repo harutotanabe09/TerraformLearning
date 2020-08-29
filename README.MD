@@ -75,8 +75,12 @@ terraform destroy  -var-file="secret.tfvars"
 
 ### 環境ごと設定
 ```sh
+
 terraform workspace new develop
+
 terraform workspace list
+
+terraform workspace select default
 ```
 
 ### ドキュメント
